@@ -9,29 +9,30 @@ using System.Timers;
 
 namespace Utf8NetworkLib
 {
-	public class Utf8TcpClient : IUtf8SocketOwner
+	public class Utf8TcpClient : IUtf8SocketOwner, IDisposable
 	{
 		int m_PortNumber = 1111;
 		string m_Address;
-		
+
 		Action<string> m_Logger;
 		TcpClient m_Client;
 		Utf8TcpPeer m_Peer = null;
-		object m_PeerListLock = new object();
+		object m_ReconnectLock = new object();
 		int m_AutoReconnect;
+		bool m_Disposed = false;
 
 		public char PacketSeparator { get; private set; }
 		public int BufferSize { get; private set; }
 
 		public Utf8TcpClient(string address, int port, int bufferSize, char packetSeparator, int autoReconnect = -1)
-        {
+		{
 			m_Address = address;
-            m_PortNumber = port;
+			m_PortNumber = port;
 			m_Logger = s => System.Diagnostics.Debug.WriteLine(s);
 			PacketSeparator = packetSeparator;
 			BufferSize = bufferSize;
 			m_AutoReconnect = autoReconnect;
-        }
+		}
 
 		public Action<string> Logger
 		{
@@ -46,10 +47,13 @@ namespace Utf8NetworkLib
 
 		public void Connect()
 		{
-			m_Client = new TcpClient();
+			lock (m_ReconnectLock)
+			{
+				m_Client = new TcpClient();
 
-			if (!m_Client.Connected)
-				m_Client.BeginConnect(m_Address, m_PortNumber, EndConnect, null);
+				if (!m_Disposed)
+					m_Client.BeginConnect(m_Address, m_PortNumber, EndConnect, null);
+			}
 		}
 
 		private void EndConnect(IAsyncResult res)
@@ -65,7 +69,7 @@ namespace Utf8NetworkLib
 				m_Peer.ConnectionClosed += m_Peer_ConnectionClosed;
 				m_Peer.DataReceived += m_Peer_DataReceived;
 			}
-			catch(SocketException)
+			catch (SocketException)
 			{
 				if (ConnectionFailed != null)
 					ConnectionFailed(this, EventArgs.Empty);
@@ -81,10 +85,10 @@ namespace Utf8NetworkLib
 			if (m_AutoReconnect >= 0)
 			{
 				ThreadPool.QueueUserWorkItem(_ =>
-				{
-					Thread.Sleep(m_AutoReconnect);
-					Connect();
-				});
+					{
+						Thread.Sleep(m_AutoReconnect);
+						Connect();
+					});
 			}
 		}
 
@@ -127,7 +131,16 @@ namespace Utf8NetworkLib
 		public event EventHandler<Utf8TcpPeerEventArgs> DataReceived;
 
 
-
-
+		public void Dispose()
+		{
+			lock (m_ReconnectLock)
+			{
+				if (m_Client != null)
+				{
+					m_Client.Close();
+					m_Client = null;
+				}
+			}
+		}
 	}
 }
