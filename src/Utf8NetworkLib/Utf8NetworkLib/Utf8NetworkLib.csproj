@@ -45,7 +45,6 @@
     <Compile Include="Utf8TcpPeerEventArgs.cs" />
     <Compile Include="Utf8TcpServer.cs" />
     <Compile Include="Utf8TcpServerOptions.cs" />
-    <Compile Include="XmlWriter_Extensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

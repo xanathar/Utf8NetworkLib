@@ -9,6 +9,9 @@ using System.Threading;
 
 namespace Utf8NetworkLib
 {
+	/// <summary>
+	/// This class represents a single connection
+	/// </summary>
 	public class Utf8TcpPeer
 	{
 		Socket m_Socket;
@@ -16,9 +19,18 @@ namespace Utf8NetworkLib
 		int m_PrevSize = 0;
 		byte[] m_RecvBuffer;
 
+		/// <summary>
+		/// A unique Id associated with this object
+		/// </summary>
 		public string Id { get; private set; }
 
+		/// <summary>
+		/// Occurs when the connection is closed
+		/// </summary>
 		public event EventHandler<Utf8TcpPeerEventArgs> ConnectionClosed;
+		/// <summary>
+		/// Occurs when data is received
+		/// </summary>
 		public event EventHandler<Utf8TcpPeerEventArgs> DataReceived;
 
 
@@ -105,28 +117,48 @@ namespace Utf8NetworkLib
 			catch { }
 		}
 
+		/// <summary>
+		/// Sends the specified message.
+		/// </summary>
+		/// <param name="message">The message.</param>
 		public void Send(string message)
 		{
 			SendTerminated(m_Owner.CompleteMessage(message));
 		}
 
+		/// <summary>
+		/// Sends the specified message.
+		/// </summary>
+		/// <param name="message">The message.</param>
+		/// <param name="args">The arguments.</param>
 		public void Send(string message, params object[] args)
 		{
 			SendTerminated(m_Owner.CompleteMessage(string.Format(message, args)));
 		}
 
 
+		/// <summary>
+		/// Sends the specified message, which is already terminated.
+		/// </summary>
+		/// <param name="message">The message.</param>
 		public void SendTerminated(string message)
 		{
 			byte[] bytes = Encoding.UTF8.GetBytes(message);
 			SendBinary(bytes);
 		}
 
+		/// <summary>
+		/// Disconnects this instance.
+		/// </summary>
 		public void Disconnect()
 		{
 			m_Socket.Close();
 		}
 
+		/// <summary>
+		/// Sends binary data
+		/// </summary>
+		/// <param name="bytes">The bytes.</param>
 		public void SendBinary(byte[] bytes)
 		{
 			try

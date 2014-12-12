@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Utf8NetworkLib
 {
+	/// <summary>
+	/// Options for server connections
+	/// </summary>
 	[Flags]
 	public enum Utf8TcpServerOptions
 	{

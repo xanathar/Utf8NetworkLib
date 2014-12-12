@@ -38,16 +38,17 @@ namespace TestApplication
 			txtSend.Enabled = btnSend.Enabled = true;
 		}
 
-
 		private void Log(string format, params object[] args)
 		{
 			string msg = string.Format(format, args);
+			// note : here we are likely in some random thread.. use BeginInvoke to marshal the call to the UI thread
 			this.BeginInvoke((Action)(() => { lstReceived.Items.Insert(0, msg); }));
 		}
 
 		private void LogStatus(string format, params object[] args)
 		{
 			string msg = string.Format(format, args);
+			// note : here we are likely in some random thread.. use BeginInvoke to marshal the call to the UI thread
 			this.BeginInvoke((Action)(() => { lstReceived.Items.Insert(0, msg); lblStatus.Text = msg; }));
 		}
 
@@ -57,14 +58,16 @@ namespace TestApplication
 		{
 			DisableConnectionControls();
 			lblStatus.Text = "INITIALIZING SERVER..";
+			// create the server object
 			m_Server = new Utf8TcpServer(int.Parse(txtPort.Text), 1000000, '\n', Utf8TcpServerOptions.Default);
-			m_Server.Start();
+			// attach event handlers.. most are just for logging purposes
 			m_Server.ClientConnected += m_Server_ClientConnected;
 			m_Server.ClientDisconnected += m_Server_ClientDisconnected;
 			m_Server.DataReceived += m_Server_DataReceived;
+			// start the server
+			m_Server.Start();
 
 			LogStatus("{0} connected clients", m_Server.GetConnectedClients());
-
 			btnSend.Click += Server_btnSend_Click;
 		}
 
@@ -99,14 +102,17 @@ namespace TestApplication
 		{
 			DisableConnectionControls();
 			lblStatus.Text = "INITIALIZING CONNECTION..";
-
+			// create the client object with a 1 sec auto-reconnect
 			m_Client = new Utf8TcpClient(txtAddress.Text, int.Parse(txtPort.Text), 1000000, '\n', 1000);
+			// attach event handlers.. most are just for logging purposes as we have auto-reconnect turned on
 			m_Client.ClientConnected += m_Client_ClientConnected;
 			m_Client.ClientDisconnected += m_Client_ClientDisconnected;
 			m_Client.ConnectionFailed += m_Client_ConnectionFailed;
 			m_Client.DataReceived += m_Client_DataReceived;
 
 			lblStatus.Text = "CONNECTING..";
+
+			// and now, connect
 			m_Client.Connect();
 
 			btnSend.Click += Client_btnSend_Click;

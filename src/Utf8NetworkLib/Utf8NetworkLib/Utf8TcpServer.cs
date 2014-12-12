@@ -10,6 +10,9 @@ using System.Threading;
 
 namespace Utf8NetworkLib
 {
+	/// <summary>
+	/// Handles a server 
+	/// </summary>
 	public class Utf8TcpServer : IUtf8SocketOwner, IDisposable
 	{
 		int m_PortNumber = 1912;
@@ -18,20 +21,48 @@ namespace Utf8NetworkLib
 		Action<string> m_Logger;
 		List<Utf8TcpPeer> m_PeerList = new List<Utf8TcpPeer>();
 		object m_PeerListLock = new object();
+
+
+
+		/// <summary>
+		/// Gets the packet separator character. Must be a single byte character in UTF-8
+		/// </summary>
 		public char PacketSeparator { get; private set; }
 
+		/// <summary>
+		/// Gets the options with which this server was initialized
+		/// </summary>
 		public Utf8TcpServerOptions Options { get; private set; }
 
+		/// <summary>
+		/// Occurs when a client connects
+		/// </summary>
 		public event EventHandler<Utf8TcpPeerEventArgs> ClientConnected;
+		/// <summary>
+		/// Occurs when data is received
+		/// </summary>
 		public event EventHandler<Utf8TcpPeerEventArgs> DataReceived;
+		/// <summary>
+		/// Occurs when a client disconnects
+		/// </summary>
 		public event EventHandler<Utf8TcpPeerEventArgs> ClientDisconnected;
 
+		/// <summary>
+		/// Gets the port number the server is listening to
+		/// </summary>
 		public int PortNumber
 		{
 			get { return m_PortNumber; }
 		}
 
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Utf8TcpServer"/> class.
+		/// </summary>
+		/// <param name="port">The port to listen to.</param>
+		/// <param name="bufferSize">Size of the buffer. Messages longer than this cause problems.</param>
+		/// <param name="packetSeparator">The packet separator. Must be a single byte character in UTF-8</param>
+		/// <param name="options">The options.</param>
 		public Utf8TcpServer(int port, int bufferSize, char packetSeparator, Utf8TcpServerOptions options)
         {
 			m_IPAddress = ((options & Utf8TcpServerOptions.LocalHostOnly) != 0) ? IPAddress.Loopback : IPAddress.Any;
@@ -42,12 +73,18 @@ namespace Utf8NetworkLib
 			Options = options;
         }
 
+		/// <summary>
+		/// A delegate called to log some messages
+		/// </summary>
 		public Action<string> Logger
 		{
 			get { return m_Logger; }
 			set { m_Logger = value ?? (s => Console.WriteLine(s)); }
 		}
 
+		/// <summary>
+		/// Starts listening for client connections
+		/// </summary>
         public void Start()
         {
 			m_Listener = new TcpListener(m_IPAddress, m_PortNumber);
@@ -55,6 +92,9 @@ namespace Utf8NetworkLib
 			m_Listener.BeginAcceptSocket(OnAcceptSocket, null);
         }
 
+		/// <summary>
+		/// Gets the size of the buffer. Messages longer than this cause problems.
+		/// </summary>
 		public int BufferSize { get; private set; }
 
 
@@ -76,6 +116,9 @@ namespace Utf8NetworkLib
 			}
 		}
 
+		/// <summary>
+		/// Gets the number of connected clients.
+		/// </summary>
 		public int GetConnectedClients()
 		{
 			lock (m_PeerListLock) 
@@ -144,6 +187,10 @@ namespace Utf8NetworkLib
             }
         }
 
+		/// <summary>
+		/// Broadcasts a  message to all connected clients
+		/// </summary>
+		/// <param name="message">The message.</param>
         public void BroadcastMessage(string message)
         {
 			List<Utf8TcpPeer> peers;
@@ -168,12 +215,18 @@ namespace Utf8NetworkLib
             }
         }
 
+		/// <summary>
+		/// Stops this instance.
+		/// </summary>
         public void Stop()
         {
 			m_Listener.Stop();
         }
 
 
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
 		public void Dispose()
 		{
 			Stop();
