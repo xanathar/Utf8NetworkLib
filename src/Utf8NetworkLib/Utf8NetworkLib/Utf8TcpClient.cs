@@ -95,6 +95,8 @@ namespace Utf8NetworkLib
 
 				m_Peer.ConnectionClosed += m_Peer_ConnectionClosed;
 				m_Peer.DataReceived += m_Peer_DataReceived;
+
+				m_Peer.Start();
 			}
 			catch (SocketException)
 			{
@@ -127,6 +129,13 @@ namespace Utf8NetworkLib
 
 		void m_Peer_ConnectionClosed(object sender, Utf8TcpPeerEventArgs e)
 		{
+			if (m_Peer != null)
+			{
+				m_Peer.ConnectionClosed -= m_Peer_ConnectionClosed;
+				m_Peer.DataReceived -= m_Peer_DataReceived;
+				m_Peer.Disconnect();
+			}
+
 			m_Peer = null;
 
 			if (ClientDisconnected != null)
