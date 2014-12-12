@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30723.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utf8NetworkLib", "Utf8NetworkLib\Utf8NetworkLib.csproj", "{1CCE3FBF-B748-4190-953E-2E86695DEC3D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApplication", "TestApplication\TestApplication.csproj", "{77872501-F4A2-4570-95CA-6F932E94693E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1CCE3FBF-B748-4190-953E-2E86695DEC3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CCE3FBF-B748-4190-953E-2E86695DEC3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CCE3FBF-B748-4190-953E-2E86695DEC3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CCE3FBF-B748-4190-953E-2E86695DEC3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77872501-F4A2-4570-95CA-6F932E94693E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77872501-F4A2-4570-95CA-6F932E94693E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77872501-F4A2-4570-95CA-6F932E94693E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77872501-F4A2-4570-95CA-6F932E94693E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
